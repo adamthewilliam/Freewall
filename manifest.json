@@ -15,7 +15,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "Click to archive"
+    "default_title": "Click to be free"
   },
   "content_scripts": [
     {
