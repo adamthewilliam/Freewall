@@ -1,3 +1,4 @@
+
 chrome.storage.session.get(['urlToBeArchived'], function(result) {
     console.log('Url to be archived is: ' + result.urlToBeArchived);
     
@@ -19,18 +20,6 @@ chrome.storage.session.get(['urlToBeArchived'], function(result) {
     var form = containerShadow.querySelector('form');
     console.log(form);
     form.requestSubmit();
-
-    //var textBox = document.querySelector('.rbt-input-main');
-    //textBox.value = result.urlToBeArchived;
-    //console.log(textBox);
-    //console.log(textBox.value);
-
-    //var form = document.querySelector('.search-text-container form');
-    //console.log(form);
-    //form.submit();
-    //var btn = document.querySelector('.hidden-submit-btn');
-    //console.log(btn);
-    //btn.click();
 });
 
 

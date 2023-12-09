@@ -12,14 +12,21 @@ chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONT
 // Open a new search tab when the user clicks a context menu
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     const selectedLinkUrl = info.linkUrl;
-    const newUrl = new URL(`https://archive.org/`);
+    handleUserRedirection(selectedLinkUrl, tab.index);
+   // const newUrl = new URL(`https://archive.org/`);
 
-    const tabIndex = tab.index + 1
+   // const tabIndex = tab.index + 1
 
-    chrome.tabs.create({ url: newUrl.href, index: tabIndex });
-    chrome.storage.session.set({urlToBeArchived: selectedLinkUrl}).then(() => {
-        console.log("Url:" + selectedLinkUrl + "to archive has been stored.");
-    })
+   // chrome.tabs.create({ url: newUrl.href, index: tabIndex });
+   // chrome.storage.session.set({urlToBeArchived: selectedLinkUrl}).then(() => {
+   //     console.log("Url:" + selectedLinkUrl + "to archive has been stored.");
+   // })
+});
+
+chrome.action.onClicked.addListener((tab) => {
+    const currentTabUrl = tab.url;
+    console.log(currentTabUrl);
+    handleUserRedirection(currentTabUrl, tab.index);
 });
 
 // Listens for tab creation, once the tab is created we listen
@@ -38,5 +45,16 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
     });
     chrome.tabs.onUpdated.removeListener(onCreateListener);
 });
+
+function handleUserRedirection(url, tabIndex) {
+    console.log(url, tabIndex)
+
+    const newUrl = new URL(`https://archive.org/`);
+
+    chrome.tabs.create({ url: newUrl.href, index: tabIndex + 1});
+    chrome.storage.session.set({urlToBeArchived: url}).then(() => {
+        console.log("Url:" + url + "to archive has been stored.");
+    });
+}
 
 
