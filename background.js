@@ -33,17 +33,40 @@ chrome.action.onClicked.addListener((tab) => {
 // for the update and check whether the tab is fully loaded. 
 // To clean up remove the onUpdated listener
 chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
-    chrome.tabs.onUpdated.addListener(function listener (tabId, info) {
+    console.log("Created listener added");
+    chrome.tabs.onUpdated.addListener(function listener (tabId, info, onUpdatedTab) {
+        console.log("updated listener callback hit");
+        console.log("tabId: " + onUpdatedTab.index + " tab.index: " + tab.index);
         if (info.status === 'complete' && tabId === tab.id) {
             chrome.tabs.onUpdated.removeListener(listener);
-                chrome.scripting.executeScript({
-                        target : {tabId : tab.id},
-                        files : [ "script.js" ],
-                })
-                .then(() => console.log("script injected"));
+
+            // Check if the tab that finished updating is the tab currently opened
+            // If not, send a push notification to the user
+            let queryOptions = {active: true, lastFocusedWindow: true};
+            chrome.tabs.query(queryOptions, ([currentTab]) => {
+                if (chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
+                }
+                else {
+                    console.log(currentTab);
+                    console.log("Current tab index: " + currentTab.index);
+                    console.log("Index of the tab finished updating: " + onUpdatedTab.index);
+                    if (currentTab.index === onUpdatedTab.index) {
+                        console.log("We are currently in the same tab. Add value to textbox and submit form");
+                        chrome.scripting.executeScript({
+                            target : {tabId : currentTab.id},
+                            files : [ "script.js" ],
+                        })
+                        .then(() => console.log("script injected"));
+                    }
+                    else {
+                        console.log("We are in a different tab and will make a push notification");
+                        handleNotification(onUpdatedTab.index);
+                    }
+                }
+            });
         }
     });
-    chrome.tabs.onUpdated.removeListener(onCreateListener);
 });
 
 function handleUserRedirection(url, tabIndex) {
@@ -53,8 +76,40 @@ function handleUserRedirection(url, tabIndex) {
 
     chrome.tabs.create({ url: newUrl.href, index: tabIndex + 1});
     chrome.storage.session.set({urlToBeArchived: url}).then(() => {
-        console.log("Url:" + url + "to archive has been stored.");
+        console.log("Url: " + url + " to archive has been stored.");
     });
 }
+
+function handleNotification(tabIndexToMoveTo) {
+    console.log("time to make a notification");
+    chrome.notifications.create(
+        tabIndexToMoveTo.toString(), {
+            title: "Completed",
+            iconUrl: "icons/icon128.png",
+            message: "You have broken the paywall!",
+            type: "basic",
+            buttons: [
+                {
+                    title: "Go back"
+                }
+            ]
+        },
+        (notificationId) => {
+            if (chrome.runtime.lastError) {
+                console.log("Error creating notification: " + chrome.runtime.lastError.message);
+            } else {
+                console.log("Notification created successfully with id: " + notificationId);
+            }
+        }
+    );
+}
+
+chrome.notifications.onButtonClicked.addListener((notificationId) => {
+    var indexOfTabToMoveTo = Number.parseInt(notificationId)
+    chrome.tabs.goBack(indexOfTabToMoveTo, () => {
+        console.log("Moved back to previous tab after the web page has loaded")
+        chrome.notifications.clear(notificationId);
+    });
+});
 
 
