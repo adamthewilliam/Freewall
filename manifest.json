@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Archive Me",
+  "name": "Freewall",
   "version": "1.0",
-  "description": "Automatically open links in Webpage Archive to avoid paywalls.",
+  "description": "Allows you to bypass paywalls by redirecting you to web archive when you click a link",
   "permissions": [
     "contextMenus", "activeTab", "storage", "scripting"
   ],
@@ -22,9 +22,9 @@
     }
   ],
   "icons": {
-    "16": "icon16.png",
-    "32": "icon32.png",
-    "48": "icon48.png",
+    "16": "./icons/icon16.png",
+    "32": "./icons/icon32.png",
+    "48": "./icons/icon48.png",
     "128": "icon128.png"
   }
 }
