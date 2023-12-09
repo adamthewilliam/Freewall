@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Allows you to bypass paywalls by redirecting you to web archive when you click a link",
   "permissions": [
-    "contextMenus", "activeTab", "storage", "scripting", "notifications"
+    "contextMenus", "activeTab", "storage", "scripting", "notifications", "tabs"
   ],
   "host_permissions": [
     "http://*/*",

@@ -1,3 +1,8 @@
+chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+
+const initialUrlDestination = "https://archive.org/";
+const finalUrlDestination = "https://web.archive.org/web";
+
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
         id: "OpenArchiveId",
@@ -7,20 +12,10 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
 });
 
-chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
-
-// Open a new search tab when the user clicks a context menu
+// Entry points to redirecting user
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     const selectedLinkUrl = info.linkUrl;
     handleUserRedirection(selectedLinkUrl, tab.index);
-   // const newUrl = new URL(`https://archive.org/`);
-
-   // const tabIndex = tab.index + 1
-
-   // chrome.tabs.create({ url: newUrl.href, index: tabIndex });
-   // chrome.storage.session.set({urlToBeArchived: selectedLinkUrl}).then(() => {
-   //     console.log("Url:" + selectedLinkUrl + "to archive has been stored.");
-   // })
 });
 
 chrome.action.onClicked.addListener((tab) => {
@@ -35,33 +30,38 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
     console.log("Created listener added");
     chrome.tabs.onUpdated.addListener(function listener (tabId, info, onUpdatedTab) {
+
         console.log("updated listener callback hit");
         console.log("tabId: " + onUpdatedTab.index + " tab.index: " + tab.index);
-        if (info.status === 'complete' && tabId === tab.id) {
-            chrome.tabs.onUpdated.removeListener(listener);
 
-            // Check if the tab that finished updating is the tab currently opened
-            // If not, send a push notification to the user
+        if (info.status === 'complete' && tabId === tab.id) {
+
             let queryOptions = {active: true, lastFocusedWindow: true};
             chrome.tabs.query(queryOptions, ([currentTab]) => {
                 if (chrome.runtime.lastError) {
                     console.error(chrome.runtime.lastError);
                 }
                 else {
-                    console.log(currentTab);
-                    console.log("Current tab index: " + currentTab.index);
-                    console.log("Index of the tab finished updating: " + onUpdatedTab.index);
-                    if (currentTab.index === onUpdatedTab.index) {
+                    if(currentTab.index !== onUpdatedTab.index) {
+                        if(onUpdatedTab.url.startsWith(finalUrlDestination)) {
+
+                            console.log("We are in a different tab and will make a push notification");
+
+                            handleNotification(onUpdatedTab.index);
+                            
+                            chrome.tabs.onUpdated.removeListener(listener);
+                        }
+                    }
+                    else {
                         console.log("We are currently in the same tab. Add value to textbox and submit form");
+
                         chrome.scripting.executeScript({
-                            target : {tabId : currentTab.id},
+                            target : {tabId : onUpdatedTab.id},
                             files : [ "script.js" ],
                         })
                         .then(() => console.log("script injected"));
-                    }
-                    else {
-                        console.log("We are in a different tab and will make a push notification");
-                        handleNotification(onUpdatedTab.index);
+
+                        chrome.tabs.onUpdated.removeListener(listener);
                     }
                 }
             });
@@ -72,7 +72,7 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
 function handleUserRedirection(url, tabIndex) {
     console.log(url, tabIndex)
 
-    const newUrl = new URL(`https://archive.org/`);
+    const newUrl = new URL(initialUrlDestination);
 
     chrome.tabs.create({ url: newUrl.href, index: tabIndex + 1});
     chrome.storage.session.set({urlToBeArchived: url}).then(() => {
@@ -80,10 +80,10 @@ function handleUserRedirection(url, tabIndex) {
     });
 }
 
-function handleNotification(tabIndexToMoveTo) {
-    console.log("time to make a notification");
+function handleNotification(idOfTabToMoveTo) {
+    console.log("time to make a notification for tab id: " + idOfTabToMoveTo);
     chrome.notifications.create(
-        tabIndexToMoveTo.toString(), {
+        idOfTabToMoveTo.toString(), {
             title: "Completed",
             iconUrl: "icons/icon128.png",
             message: "You have broken the paywall!",
@@ -106,10 +106,8 @@ function handleNotification(tabIndexToMoveTo) {
 
 chrome.notifications.onButtonClicked.addListener((notificationId) => {
     var indexOfTabToMoveTo = Number.parseInt(notificationId)
-    chrome.tabs.goBack(indexOfTabToMoveTo, () => {
+    chrome.tabs.highlight({tabs: indexOfTabToMoveTo}, () => {
         console.log("Moved back to previous tab after the web page has loaded")
         chrome.notifications.clear(notificationId);
     });
 });
-
-
