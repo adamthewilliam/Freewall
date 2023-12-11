@@ -43,14 +43,11 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
                 }
                 else {
                     if(currentTab.index !== onUpdatedTab.index) {
-                        //if(onUpdatedTab.url.startsWith(finalUrlDestination)) {
-
                             console.log("We are in a different tab and will make a push notification");
 
                             handleNotification(onUpdatedTab.index);
                             
                             chrome.tabs.onUpdated.removeListener(listener);
-                       // }
                     }
                     else {
                         console.log("We are currently in the same tab. Add value to textbox and submit form");
