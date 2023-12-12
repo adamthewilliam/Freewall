@@ -5,7 +5,7 @@ const initialUrlDestination = "https://archive.ph/";
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
         id: "OpenArchiveId",
-        title: "Open in Archive",
+        title: "Bypass paywall",
         type: "normal",
         contexts: ['link']
     });
