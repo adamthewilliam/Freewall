@@ -1,4 +1,3 @@
-
 chrome.storage.session.get(['urlToBeArchived'], function(result) {
     console.log('Url to be archived is: ' + result.urlToBeArchived);
 

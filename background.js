@@ -1,7 +1,6 @@
 chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
 
 const initialUrlDestination = "https://archive.ph/";
-const finalUrlDestination = "https://web.archive.org/web";
 
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
@@ -25,14 +24,11 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 // Listens for tab creation, once the tab is created we listen
-// for the update and check whether the tab is fully loaded. 
-// To clean up remove the onUpdated listener
+// Wait till update is complete and then check whether the user is still in the same tab.
+// If not, send a notification and if so 
 chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
-    console.log("Created listener added");
     chrome.tabs.onUpdated.addListener(function listener (tabId, info, onUpdatedTab) {
-
-        console.log("updated listener callback hit");
-        console.log("tabId: " + onUpdatedTab.index + " tab.index: " + tab.index);
+        console.log(`updated tab index: ${onUpdatedTab.index}, created tab index: ${tab.index}`);
 
         if (info.status === 'complete' && tabId === tab.id) {
 
@@ -43,14 +39,14 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
                 }
                 else {
                     if(currentTab.index !== onUpdatedTab.index) {
-                            console.log("We are in a different tab and will make a push notification");
+                        console.log("User is in a different, send them a notification");
 
-                            handleNotification(onUpdatedTab.index);
-                            
-                            chrome.tabs.onUpdated.removeListener(listener);
+                        handleNotification(onUpdatedTab.index);
+                        
+                        chrome.tabs.onUpdated.removeListener(listener);
                     }
                     else {
-                        console.log("We are currently in the same tab. Add value to textbox and submit form");
+                        console.log("User is in the same tab");
 
                         chrome.scripting.executeScript({
                             target : {tabId : onUpdatedTab.id},
@@ -66,6 +62,14 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
     });
 });
 
+chrome.notifications.onButtonClicked.addListener((notificationId) => {
+    var indexOfTabToMoveTo = Number.parseInt(notificationId)
+    chrome.tabs.highlight({tabs: indexOfTabToMoveTo}, () => {
+        console.log("Moved back to previous tab after the web page has loaded")
+        chrome.notifications.clear(notificationId);
+    });
+});
+
 function handleUserRedirection(url, tabIndex) {
     console.log(url, tabIndex)
 
@@ -73,12 +77,11 @@ function handleUserRedirection(url, tabIndex) {
 
     chrome.tabs.create({ url: newUrl.href, index: tabIndex + 1});
     chrome.storage.session.set({urlToBeArchived: url}).then(() => {
-        console.log("Url: " + url + " to archive has been stored.");
+        console.log(`Url: ${url} to archive has been stored`);
     });
 }
 
 function handleNotification(idOfTabToMoveTo) {
-    console.log("time to make a notification for tab id: " + idOfTabToMoveTo);
     chrome.notifications.create(
         idOfTabToMoveTo.toString(), {
             title: "Completed",
@@ -93,18 +96,10 @@ function handleNotification(idOfTabToMoveTo) {
         },
         (notificationId) => {
             if (chrome.runtime.lastError) {
-                console.log("Error creating notification: " + chrome.runtime.lastError.message);
+                console.log(`Error creating notification: ${chrome.runtime.lastError.message}`);
             } else {
-                console.log("Notification created successfully with id: " + notificationId);
+                console.log(`Notification created successfully with id: ${notificationId}`);
             }
         }
     );
 }
-
-chrome.notifications.onButtonClicked.addListener((notificationId) => {
-    var indexOfTabToMoveTo = Number.parseInt(notificationId)
-    chrome.tabs.highlight({tabs: indexOfTabToMoveTo}, () => {
-        console.log("Moved back to previous tab after the web page has loaded")
-        chrome.notifications.clear(notificationId);
-    });
-});
