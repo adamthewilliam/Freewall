@@ -1,5 +1,5 @@
 chrome.storage.session.get(['urlToBeArchived'], function(result) {
-    console.log('Url to be archived is: ' + result.urlToBeArchived);
+    console.log(`Url to be archived is: ${result.urlToBeArchived}`);
 
     const currentUrl = window.location.href;
 
