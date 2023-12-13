@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Freewall",
   "version": "1.0",
-  "description": "Allows you to bypass paywalls by redirecting you to web archive when you click a link",
+  "description": "Bypass paywalls by conveniently viewing snapshots of websites on web archive",
   "permissions": [
     "contextMenus", "activeTab", "storage", "scripting", "notifications", "tabs"
   ],
