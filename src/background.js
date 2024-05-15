@@ -39,15 +39,9 @@ chrome.tabs.onCreated.addListener(function onCreateListener(tab) {
                 }
                 else {
                     if(currentTab.index !== onUpdatedTab.index) {
-                        console.log("User is in a different, send them a notification");
-
-                        handleNotification(onUpdatedTab.index);
-                        
                         chrome.tabs.onUpdated.removeListener(listener);
                     }
                     else {
-                        console.log("User is in the same tab");
-
                         chrome.scripting.executeScript({
                             target : {tabId : onUpdatedTab.id},
                             files : [ "script.js" ],
@@ -79,27 +73,4 @@ function handleUserRedirection(url, tabIndex) {
     chrome.storage.session.set({urlToBeArchived: url}).then(() => {
         console.log(`Url: ${url} to archive has been stored`);
     });
-}
-
-function handleNotification(idOfTabToMoveTo) {
-    chrome.notifications.create(
-        idOfTabToMoveTo.toString(), {
-            title: "Completed",
-            iconUrl: "icons/icon128.png",
-            message: "You have broken the paywall!",
-            type: "basic",
-            buttons: [
-                {
-                    title: "Go back"
-                }
-            ]
-        },
-        (notificationId) => {
-            if (chrome.runtime.lastError) {
-                console.log(`Error creating notification: ${chrome.runtime.lastError.message}`);
-            } else {
-                console.log(`Notification created successfully with id: ${notificationId}`);
-            }
-        }
-    );
 }
