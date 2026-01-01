@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freewall Options</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Freewall</h1>
+        <p class="subtitle">Configure archiving and article discovery</p>
+      </header>
+
+      <section class="services-section">
+        <h2>Archive Services</h2>
+        <p class="hint">Select your preferred archive service</p>
+
+        <div id="services-list" class="services-list">
+          <!-- Populated by JavaScript -->
+        </div>
+      </section>
+
+      <section class="add-section">
+        <h2>Add Custom Service</h2>
+        <p class="hint">Add your own archive service</p>
+
+        <form id="add-service-form" class="add-form">
+          <div class="form-group">
+            <label for="service-name">Service Name</label>
+            <input type="text" id="service-name" name="name" placeholder="My Archive" required />
+          </div>
+
+          <div class="form-group">
+            <label for="service-url">Service URL</label>
+            <input type="url" id="service-url" name="url" placeholder="https://example.com/" required />
+          </div>
+
+          <div class="form-group">
+            <label for="form-selector">Form Selector</label>
+            <input type="text" id="form-selector" name="formSelector" placeholder="#submit-form" required />
+          </div>
+
+          <div class="form-group">
+            <label for="input-selector">Input Selector</label>
+            <input type="text" id="input-selector" name="inputSelector" placeholder="#url-input" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Service</button>
+        </form>
+      </section>
+
+      <section class="keyboard-section">
+        <h2>Keyboard Shortcut</h2>
+        <p class="hint">
+          Default: <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>A</kbd>
+        </p>
+        <p class="hint">
+          You can customize this in your browser's extension shortcuts settings.
+        </p>
+      </section>
+
+      <section class="search-section">
+        <h2>Article Discovery</h2>
+        <p class="hint">Select your preferred search engine for finding alternative articles</p>
+
+        <div id="search-engines-list" class="services-list">
+          <!-- Populated by JavaScript -->
+        </div>
+      </section>
+
+      <footer>
+        <p>Freewall v1.2.0</p>
+      </footer>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

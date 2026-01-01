@@ -1,0 +1,26 @@
+{
+  "name": "freewall",
+  "version": "1.2.0",
+  "description": "Archive web pages and discover alternative sources for articles",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt --browser firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build --browser firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip --browser firefox",
+    "postinstall": "wxt prepare",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.0",
+    "happy-dom": "^15.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.0",
+    "wxt": "^0.19.0"
+  }
+}
