@@ -1,6 +1,6 @@
 {
   "name": "freewall",
-  "version": "1.2.0",
+  "version": "1.1.0",
   "description": "Archive web pages and discover alternative sources for articles",
   "private": true,
   "type": "module",
