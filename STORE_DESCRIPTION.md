@@ -19,7 +19,7 @@ Freewall: Save pages. Find alternatives. Never lose content.
 
 Freewall is a web archiving and article discovery extension. Archive webpages to preserve them for future reference, or find alternative sources covering the same topic across free news outlets.
 
-Whether you're researching, saving content for later, or looking for different perspectives on a story—Freewall helps you access the information you need.
+Whether you're researching, saving content for later, or looking for different perspectives on a story, Freewall helps you access the information you need.
 
 -------------------------
 
