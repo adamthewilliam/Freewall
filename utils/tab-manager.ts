@@ -4,6 +4,7 @@
  */
 
 import { TAB_LISTENER_TIMEOUT_MS } from './constants';
+import { hasAllHostsPermission } from './permissions';
 
 /**
  * Opens a new tab adjacent to the specified tab index.
@@ -86,6 +87,14 @@ export function setupScriptInjection(
       });
 
       if (currentTab?.index === updatedTab.index && updatedTab.id) {
+        // Verify we have permission (should already be granted by handleUserRedirection)
+        // Note: We use contains() here, not request(), because this is not a user gesture context
+        const hasPermission = await hasAllHostsPermission();
+        if (!hasPermission) {
+          console.warn('No host permission for script injection - was permission denied earlier?');
+          return;
+        }
+
         await browser.scripting.executeScript({
           target: { tabId: updatedTab.id },
           files: [scriptFile],

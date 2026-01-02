@@ -8,6 +8,7 @@ import { getSelectedService, setSessionData, getSelectedSearchEngine, getSession
 import { registerContextMenuListeners } from '@/utils/context-menus';
 import { openTabNextTo, setupScriptInjection } from '@/utils/tab-manager';
 import { cleanArticleTitle, parseArticleSlugFromUrl, extractArticleTitleFromDOM } from '@/utils/url-parser';
+import { ensureHostPermission } from '@/utils/permissions';
 import { CONTEXT_MENU_IDS } from '@/utils/constants';
 
 export default defineBackground(() => {
@@ -79,6 +80,14 @@ export default defineBackground(() => {
 async function handleUserRedirection(url: string, tabIndex: number): Promise<void> {
   console.log('Redirecting URL:', url, 'at index:', tabIndex);
 
+  // Request permission while still in user gesture context
+  // This is important because permissions.request() requires a user gesture
+  const hasPermission = await ensureHostPermission();
+  if (!hasPermission) {
+    console.warn('Permission denied for archiving');
+    return;
+  }
+
   const service = await getSelectedService();
 
   // Store URL and service ID BEFORE creating tab to avoid race condition
@@ -93,6 +102,13 @@ async function handleUserRedirection(url: string, tabIndex: number): Promise<voi
  */
 async function handleFindAlternatives(tabId: number, tabIndex: number): Promise<void> {
   try {
+    // Ensure we have permission to inject scripts
+    const hasPermission = await ensureHostPermission();
+    if (!hasPermission) {
+      console.warn('Permission denied for title extraction');
+      return;
+    }
+
     // Inject script to extract the article title
     const results = await browser.scripting.executeScript({
       target: { tabId },

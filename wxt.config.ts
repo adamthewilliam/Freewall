@@ -6,8 +6,8 @@ export default defineConfig({
     name: 'Freewall',
     version: '1.2.0',
     description: 'Archive web pages and discover alternative sources for articles',
-    permissions: ['contextMenus', 'activeTab', 'storage', 'scripting', 'tabs'],
-    host_permissions: ['http://*/*', 'https://*/*'],
+    permissions: ['contextMenus', 'storage', 'scripting', 'tabs'],
+    optional_host_permissions: ['http://*/*', 'https://*/*'],
     action: {
       default_title: 'Archive this page',
     },
