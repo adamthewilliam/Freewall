@@ -7,6 +7,7 @@ Freewall: Save pages. Find alternatives. Never lose content.
 ## Why Freewall?
 
 - Archive any webpage to Wayback Machine or Archive.ph with one click
+- Add custom archive services for flexibility
 - Find alternative coverage of articles across free news sources
 - Prevent link rot—save important pages before they disappear
 - Perfect for researchers, students, and avid readers
@@ -26,7 +27,15 @@ Whether you're researching, saving content for later, or looking for different p
 ## Features
 
 **Archive Pages**
-Right-click any link or use the keyboard shortcut (Alt+Shift+A) to save pages to your preferred archive service. Supports Wayback Machine, Archive.ph, and custom services.
+Right-click any link or use the keyboard shortcut (Alt+Shift+A) to save pages to your preferred archive service.
+
+**Multiple Archive Services**
+Choose from built-in archive services:
+- Archive.ph - Fast, reliable page snapshots
+- Wayback Machine - Internet Archive's long-term preservation
+
+**Custom Archivers**
+Need a different service? Add your own custom archive services through the options page. Configure the URL, form selector, and input field to work with any archive site.
 
 **Find Alternatives**
 Can't access an article? Right-click and "Find alternative articles" to search for the same story across free news sources.
